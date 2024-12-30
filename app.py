@@ -102,13 +102,17 @@ def main():
                     st.warning(f"Erreur de géolocalisation pour l'adresse : {st.session_state['patients'][result]['Adresse']}")
 
                     # Allow user to edit or delete
-                    edit_address = st.text_input("Modifier l'adresse", value=st.session_state['patients'][result]['Adresse'])
-                    if st.button("Mettre à jour"):
+                    edit_address = st.text_input("Modifier l'adresse", value=st.session_state['patients'][result]['Adresse'], key=f"edit_{result}")
+                    update_button = st.button("Mettre à jour", key=f"update_{result}")
+                    delete_button = st.button("Supprimer ce patient", key=f"delete_{result}")
+
+                    if update_button:
                         st.session_state['patients'][result]['Adresse'] = edit_address
-                        st.success("Adresse mise à jour avec succès !")
-                    if st.button("Supprimer ce patient"):
+                        st.experimental_rerun()
+
+                    if delete_button:
                         del st.session_state['patients'][result]
-                        st.success("Patient supprimé avec succès !")
+                        st.experimental_rerun()
                 else:
                     st.error(result)
 
