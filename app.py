@@ -70,20 +70,22 @@ def main():
     with st.sidebar:
         st.header("Ajouter un patient")
         with st.form("add_patient_form", clear_on_submit=True):
-            nom = st.text_input("Nom")
-
+            nom = st.text_input("Nom", key="nom_input")
             adresse_query = st.text_input("Adresse", key="adresse_query")
+
             suggestions = suggest_addresses(adresse_query)
 
-            selected_address = st.selectbox("Suggestions d'adresses", suggestions) if suggestions else None
+            selected_address = ""
+            if suggestions:
+                selected_address = st.selectbox("Suggestions d'adresses", suggestions, key="address_select")
 
             ajouter = st.form_submit_button("Ajouter")
 
             if ajouter:
-                if nom and selected_address:
+                if nom.strip() and selected_address.strip():
                     st.session_state["patients"].append({
-                        "Nom": nom,
-                        "Adresse": selected_address
+                        "Nom": nom.strip(),
+                        "Adresse": selected_address.strip()
                     })
                     st.success("Patient ajouté avec succès !")
                 else:
