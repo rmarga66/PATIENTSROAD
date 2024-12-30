@@ -47,28 +47,29 @@ def main():
     if "patients" not in st.session_state:
         st.session_state["patients"] = []
 
-    with st.form("add_patient_form"):
+    with st.sidebar:
         st.header("Ajouter un patient")
-        nom = st.text_input("Nom")
-        prenom = st.text_input("Prénom")
-        telephone = st.text_input("Numéro de téléphone")
-        adresse = st.text_input("Adresse")
-        ajouter = st.form_submit_button("Ajouter")
+        with st.form("add_patient_form", clear_on_submit=True):
+            nom = st.text_input("Nom")
+            prenom = st.text_input("Prénom")
+            telephone = st.text_input("Numéro de téléphone")
+            adresse = st.text_input("Adresse")
+            ajouter = st.form_submit_button("Ajouter")
 
-        if ajouter:
-            if nom and prenom and telephone and adresse:
-                st.session_state["patients"].append({
-                    "Nom": nom,
-                    "Prénom": prenom,
-                    "Téléphone": telephone,
-                    "Adresse": adresse
-                })
-                st.success("Patient ajouté avec succès !")
-            else:
-                st.error("Veuillez remplir tous les champs !")
+            if ajouter:
+                if nom and prenom and telephone and adresse:
+                    st.session_state["patients"].append({
+                        "Nom": nom,
+                        "Prénom": prenom,
+                        "Téléphone": telephone,
+                        "Adresse": adresse
+                    })
+                    st.success("Patient ajouté avec succès !")
+                else:
+                    st.error("Veuillez remplir tous les champs !")
 
     # Display added patients
-    st.header("Patients")
+    st.header("Liste des Patients")
     if st.session_state["patients"]:
         df_patients = pd.DataFrame(st.session_state["patients"])
         st.table(df_patients)
