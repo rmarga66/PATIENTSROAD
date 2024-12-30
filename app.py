@@ -3,14 +3,25 @@ import pandas as pd
 import requests
 from urllib.parse import urlencode
 
+def suggest_addresses(query):
+    """Suggest addresses using Nominatim API."""
+    response = requests.get(
+        "https://nominatim.openstreetmap.org/search",
+        params={"q": query, "format": "json", "addressdetails": 1, "limit": 5},
+    )
+    if response.status_code == 200 and response.json():
+        return [result['display_name'] for result in response.json()]
+    else:
+        return []
+
 def geocode_address(address):
     """Geocode an address using Nominatim API and handle errors."""
     response = requests.get(
         "https://nominatim.openstreetmap.org/search",
-        params={"q": address, "format": "json", "addressdetails": 1, "limit": 3},
+        params={"q": address, "format": "json", "addressdetails": 1, "limit": 1},
     )
     if response.status_code == 200 and response.json():
-        return response.json()  # Return all potential results
+        return response.json()  # Return the first result
     else:
         return None
 
@@ -64,20 +75,28 @@ def main():
             nom = st.text_input("Nom")
             prenom = st.text_input("Prénom")
             telephone = st.text_input("Numéro de téléphone")
-            adresse = st.text_input("Adresse")
+
+            adresse_input = st.text_input("Adresse", key="adresse_input")
+            suggestions = suggest_addresses(st.session_state.get("adresse_input", ""))
+
+            if suggestions:
+                selected_address = st.selectbox("Suggestions d'adresses", suggestions)
+            else:
+                selected_address = None
+
             ajouter = st.form_submit_button("Ajouter")
 
             if ajouter:
-                if nom and prenom and telephone and adresse:
+                if nom and prenom and telephone and selected_address:
                     st.session_state["patients"].append({
                         "Nom": nom,
                         "Prénom": prenom,
                         "Téléphone": telephone,
-                        "Adresse": adresse
+                        "Adresse": selected_address
                     })
                     st.success("Patient ajouté avec succès !")
                 else:
-                    st.error("Veuillez remplir tous les champs !")
+                    st.error("Veuillez remplir tous les champs et sélectionner une adresse valide !")
 
     # Display added patients
     st.header("Liste des Patients")
