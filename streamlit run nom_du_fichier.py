@@ -33,8 +33,8 @@ def get_optimized_route_osrm(patients):
     response = requests.get(osrm_url)
     if response.status_code == 200:
         data = response.json()
-        ordered_waypoints = data.get("waypoints", [])
-        ordered_addresses = [addresses[wp["waypoint_index"]] for wp in ordered_waypoints]
+        waypoints_order = data.get("waypoints", [])
+        ordered_addresses = [addresses[wp["waypoint_index"]] for wp in waypoints_order]
         return ordered_addresses
     else:
         return "Erreur lors de la récupération des données OSRM."
