@@ -73,7 +73,6 @@ def main():
         with st.form("add_patient_form", clear_on_submit=True):
             nom = st.text_input("Nom")
             prenom = st.text_input("Prénom")
-            telephone = st.text_input("Numéro de téléphone")
 
             adresse_query = st.text_input("Adresse", key="adresse_query")
             suggestions = suggest_addresses(adresse_query)
@@ -87,7 +86,6 @@ def main():
                     st.session_state["patients"].append({
                         "Nom": nom,
                         "Prénom": prenom,
-                        "Téléphone": telephone,
                         "Adresse": selected_address
                     })
                     st.success("Patient ajouté avec succès !")
