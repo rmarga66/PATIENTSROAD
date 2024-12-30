@@ -18,7 +18,7 @@ def suggest_addresses(query):
 
 def optimize_route_openrouteservice(patients):
     """Optimize the route using OpenRouteService API."""
-    API_KEY = "YOUR_OPENROUTESERVICE_API_KEY"  # Replace with your OpenRouteService API key
+    API_KEY = "5b3ce3597851110001cf62485eec9a40e7dd4df9a169b13343a6b343"  # Replace with your OpenRouteService API key
     base_url = "https://api.openrouteservice.org/v2/directions/driving-car"
 
     # Collect addresses and geocode them
@@ -72,8 +72,6 @@ def main():
         st.header("Ajouter un patient")
         with st.form("add_patient_form", clear_on_submit=True):
             nom = st.text_input("Nom")
-            prenom = st.text_input("Prénom")
-            telephone = st.text_input("Numéro de téléphone")
 
             adresse_query = st.text_input("Adresse", key="adresse_query")
             suggestions = suggest_addresses(adresse_query)
@@ -85,11 +83,9 @@ def main():
             ajouter = st.form_submit_button("Ajouter")
 
             if ajouter:
-                if nom and prenom and telephone and selected_address:
+                if nom and selected_address:
                     st.session_state["patients"].append({
                         "Nom": nom,
-                        "Prénom": prenom,
-                        "Téléphone": telephone,
                         "Adresse": selected_address
                     })
                     st.success("Patient ajouté avec succès !")
@@ -109,7 +105,7 @@ def main():
             else:
                 st.success("Tournée optimisée avec succès ! Voici l'ordre des adresses optimisé :")
                 for i, patient in enumerate(st.session_state["patients"]):
-                    st.write(f"{i+1}. {patient['Nom']} {patient['Prénom']} - {patient['Adresse']}")
+                    st.write(f"{i+1}. {patient['Nom']} - {patient['Adresse']}")
 
         if st.button("Réinitialiser la liste"):
             st.session_state["patients"] = []
