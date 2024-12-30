@@ -27,7 +27,7 @@ def get_optimized_route_osrm(patients):
     coordinates = []
     corrected_addresses = []
 
-    for address in addresses:
+    for index, address in enumerate(addresses):
         results = geocode_address(address)
         if results:
             # Use the first result for the address
@@ -35,7 +35,7 @@ def get_optimized_route_osrm(patients):
             coordinates.append(f"{location['lon']},{location['lat']}")
             corrected_addresses.append(location['display_name'])
         else:
-            return f"Erreur lors de la géolocalisation de l'adresse : {address}. Veuillez vérifier l'adresse."
+            return index  # Return index of the failing address
 
     # Construct the OSRM request URL
     coordinates_str = ";".join(coordinates)
@@ -85,18 +85,38 @@ def main():
         df_patients = pd.DataFrame(st.session_state["patients"])
         st.table(df_patients)
 
-        if st.button("Plannifier la tournée"):
-            optimized_route = get_optimized_route_osrm(st.session_state["patients"])
-            if isinstance(optimized_route, list):
-                st.success("Tournée optimisée ! Voici l'ordre des adresses :")
-                for i, address in enumerate(optimized_route):
-                    st.write(f"{i+1}. {address}")
+        col1, col2 = st.columns(2)
 
-                    # Generate Waze link
-                    waze_url = f"https://www.waze.com/ul?{urlencode({'q': address})}"
-                    st.markdown(f"[Ouvrir dans Waze]({waze_url})")
-            else:
-                st.error(optimized_route)
+        with col1:
+            if st.button("Plannifier la tournée"):
+                result = get_optimized_route_osrm(st.session_state["patients"])
+                if isinstance(result, list):
+                    st.success("Tournée optimisée ! Voici l'ordre des adresses :")
+                    for i, address in enumerate(result):
+                        st.write(f"{i+1}. {address}")
+
+                        # Generate Waze link
+                        waze_url = f"https://www.waze.com/ul?{urlencode({'q': address})}"
+                        st.markdown(f"[Ouvrir dans Waze]({waze_url})")
+                elif isinstance(result, int):
+                    st.warning(f"Erreur de géolocalisation pour l'adresse : {st.session_state['patients'][result]['Adresse']}")
+
+                    # Allow user to edit or delete
+                    edit_address = st.text_input("Modifier l'adresse", value=st.session_state['patients'][result]['Adresse'])
+                    if st.button("Mettre à jour"):
+                        st.session_state['patients'][result]['Adresse'] = edit_address
+                        st.success("Adresse mise à jour avec succès !")
+                    if st.button("Supprimer ce patient"):
+                        del st.session_state['patients'][result]
+                        st.success("Patient supprimé avec succès !")
+                else:
+                    st.error(result)
+
+        with col2:
+            if st.button("Réinitialiser la liste"):
+                st.session_state["patients"] = []
+                st.success("Liste des patients réinitialisée avec succès !")
+
     else:
         st.write("Aucun patient ajouté pour le moment.")
 
