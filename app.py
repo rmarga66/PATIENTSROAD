@@ -5,7 +5,7 @@ from urllib.parse import urlencode
 
 def optimize_route_openrouteservice(patients):
     """Optimize the route using OpenRouteService API."""
-    API_KEY = "YOUR_OPENROUTESERVICE_API_KEY"  # Replace with your OpenRouteService API key
+    API_KEY = "5b3ce3597851110001cf62485eec9a40e7dd4df9a169b13343a6b343"  # Replace with your OpenRouteService API key
     base_url = "https://api.openrouteservice.org/v2/matrix/driving-car"
 
     # Collect addresses and geocode them
