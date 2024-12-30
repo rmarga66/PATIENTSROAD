@@ -53,8 +53,7 @@ def optimize_route_openrouteservice(patients):
         data = response.json()
         routes = data.get("routes", [])
         if routes:
-            optimized_order = routes[0]["segments"]
-            return optimized_order
+            return routes[0]["summary"]
         else:
             return "Aucun itinéraire trouvé."
     else:
@@ -76,9 +75,7 @@ def main():
             adresse_query = st.text_input("Adresse", key="adresse_query")
             suggestions = suggest_addresses(adresse_query)
 
-            selected_address = ""
-            if suggestions:
-                selected_address = st.selectbox("Suggestions d'adresses", suggestions)
+            selected_address = st.selectbox("Suggestions d'adresses", suggestions) if suggestions else None
 
             ajouter = st.form_submit_button("Ajouter")
 
@@ -103,9 +100,8 @@ def main():
             if isinstance(result, str):
                 st.error(result)
             else:
-                st.success("Tournée optimisée avec succès ! Voici l'ordre des adresses optimisé :")
-                for i, patient in enumerate(st.session_state["patients"]):
-                    st.write(f"{i+1}. {patient['Nom']} - {patient['Adresse']}")
+                st.success("Tournée optimisée avec succès ! Voici les détails de l'itinéraire :")
+                st.write(result)
 
         if st.button("Réinitialiser la liste"):
             st.session_state["patients"] = []
